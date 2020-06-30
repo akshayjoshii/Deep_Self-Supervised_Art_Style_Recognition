@@ -7,3 +7,4 @@ import pickle
 import random
 
 print(cv2.__version__)
+print("Testing CUDA")
