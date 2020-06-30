@@ -6,7 +6,7 @@ from tqdm import tqdm
 import pickle
 import random
 
-#Comment one 2 3
+
 Datapath = "/src/wikiart"
 Categories = ["Abstract_Expressionism", "Action_painting", "Analytical_Cubism", "Art_Nouveau_Modern", 
                 "Baroque", "Color_Field_Paigit nting", "Contemporary_Realism", "Cubism", "Early_Renaissance", "Expressionism",
