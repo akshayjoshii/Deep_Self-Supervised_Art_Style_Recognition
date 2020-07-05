@@ -1,0 +1,8 @@
+matplotlib
+numpy
+Pillow==5.1.0
+scipy
+tensorboard
+tensorboardX
+torch
+torchvision

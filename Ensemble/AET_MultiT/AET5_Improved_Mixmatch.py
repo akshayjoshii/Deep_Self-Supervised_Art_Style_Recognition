@@ -82,7 +82,7 @@ def Generate_Mixmatch5AET_Improved_Model(data,params):
 
     dataset_name = params['dataset']
     if dataset_name == 'cifar10':
-        num_classes = 10
+        num_classes = 4 #Previous value was 10
     elif dataset_name == 'cifar100':
         num_classes = 100
     elif dataset_name=='SVHN':
@@ -501,7 +501,8 @@ def prepare_Dataloader(data,params,num_classes):
     train_labeled_dataset = AET_All_Dataloader(dataset_dir=data.train_path,dataset_mean=TRAIN_MEAN,dataset_std=TRAIN_STD, shift=params['shift'],degrees=params['rot'],shear=params['shear'],
                                                    train_label=False,translate=(params['translate'], params['translate']),
                                                    scale=(params['shrink'], params['enlarge']),
-                                                   fillcolor=(128, 128, 128), resample=PIL.Image.BILINEAR,
+                                                   fillcolor=(128, 128, 128), 
+                                                   resample=PIL.Image.BILINEAR,
                                                    matrix_transform=transforms.Compose([
                                                        transforms.Normalize((0., 0., 16., 0., 0., 16., 0., 0.),
                                                                             (1., 1., 20., 1., 1., 20., 0.015, 0.015)),

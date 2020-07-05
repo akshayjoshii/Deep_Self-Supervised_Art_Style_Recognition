@@ -7,14 +7,16 @@ import pickle
 import random
 
 
-Datapath = "/src/wikiart"
-Categories = ["Abstract_Expressionism", "Action_painting", "Analytical_Cubism", "Art_Nouveau_Modern", 
+Datapath = "F:\wikiart"
+Categories = ["Abstract_Expressionism", "Action_painting", "Analytical_Cubism", "SynthCubism", "Ukiyo"]
+
+"""
+"Abstract_Expressionism", "Action_painting", "Analytical_Cubism", "Art_Nouveau_Modern", 
                 "Baroque", "Color_Field_Paigit nting", "Contemporary_Realism", "Cubism", "Early_Renaissance", "Expressionism",
                 "Fauvism", "High_Renaissance", "Impressionism", "Mannerism_Late_Renaissance", "Minimalism", "Naive_Art_Primitivism", 
                 "New_Realism", "Northern_Renaissance", "Pointillism", "Pop_Art", "Post_Impressionism", "Realism", "Rococo", "Romanticism",
                 "Symbolism", "Synthetic_Cubism", "Ukiyo_e"]
 
-"""
 ##Code to visualize each image in the wikiart dataset folder##
 
 for category in Categories:
@@ -37,7 +39,7 @@ def create_dataset():
         n = 0
         for img in tqdm(os.listdir(path)): 
             try:
-                if n < 500:
+                if n < 50:
                     n += 1
                     img_array = cv2.imread(os.path.join(path,img), cv2.IMREAD_COLOR) 
                     new_array = cv2.resize(img_array, (500, 500))  
@@ -64,13 +66,14 @@ for sample in final[:5]:
     print(sample[1])
 
 #Dump a pickle dataset file
-pickle_out = open("/src/Dataset.pickle","wb")
+pickle_out = open("F:\wikiart\Test.pickle","wb")
 pickle.dump(final, pickle_out)
+print ("Dumping complete")
 pickle_out.close()
 
 #Read the dumped dataset
-pickle_in = open("/src/Dataset.pickle","rb")
+pickle_in = open("F:\wikiart\Test.pickle","rb")
 pickled_dataset = pickle.load(pickle_in)
-print ("Dumping complete")
+print ("Dataset read complete")
 #for sample in pickled_dataset[:5]:
     #print(sample[0])
