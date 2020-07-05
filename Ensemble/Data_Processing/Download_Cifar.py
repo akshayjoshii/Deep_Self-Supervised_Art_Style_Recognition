@@ -26,8 +26,8 @@ class CIFAR10(object):
         if execute:
             self.root=save_path
             self.download_init()
-            mkdir(save_path)
-            self.download()
+            #mkdir(save_path)
+            #self.download()
             
             #self.final_path=os.path.join(save_path,'cifar10')
             self.final_path=os.path.join(save_path,'Wikiart_Load')
@@ -37,34 +37,29 @@ class CIFAR10(object):
             self.test_path = os.path.join(self.final_path, 'testset')
             mkdir(self.train_path)
             mkdir(self.test_path)
-            if os.path.getsize(self.train_path)<10000:
+            if os.path.getsize(self.train_path)<1000000:
                 self.Process_Dataset(self.train_list,self.train_path)
-            if os.path.getsize(self.test_path)<10000:
+            if os.path.getsize(self.test_path)<1000000:
                 self.Process_Dataset(self.test_list,self.test_path)
 
     def download_init(self):
         #self.base_folder = 'cifar-10-batches-py'
         self.base_folder = 'Wikiart_Download'
         #self.url = "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz"
-        self.url = "/content/drive/My Drive/Dataset/"
+        self.url = "https://drive.google.com/drive/folders/1DFvUVgJcELu7X4xp60VPsgvUZIArvTl_/"
         self.filename = "Train.pickle"
         self.filename1 = "Test.pickle"
         #self.filename = "cifar-10-python.tar.gz"
         #self.tgz_md5 = 'c58f30108f718f92721af3b95e74349a'
-        self.train_list = [['Train.pickle'],]
-            
-        """
-            ['data_batch_1', 'c99cafc152244af753f735de768cd75f'],
-            ['data_batch_2', 'd4bba439e000b95fd0a9bffe97cbabec'],
-            ['data_batch_3', '54ebc095f3ab1f0389bbae665268c751'],
-            ['data_batch_4', '634d18415352ddfa80567beed471001a'],
-            ['data_batch_5', '482c414d41f54cd18b22e5b47cb7c3cb'],]
-        """
+        self.train_list = [
+            ['Train.pickle', 'c99cafc152244af753f735de768cd75f'],
+            ['Train.pickle', 'd4bba439e000b95fd0a9bffe97cbabec'],
+            ]
 
-        self.test_list = [['Test.pickle'],]
-        """    
-            ['test_batch', '40351d587109b95175f43aff81a1287e'],]
-        """
+        self.test_list = [  
+            ['Test.pickle', '40351d587109b95175f43aff81a1287e'],
+            ]
+
     def download(self):
         import tarfile
 
@@ -107,7 +102,7 @@ class CIFAR10(object):
         train_labels=[]
         for fentry in train_list:
             #Previously it was 'f = fentry[0]'
-            f = fentry
+            f = fentry[0]
             file = os.path.join(self.root, self.base_folder, f)
             with open(file, 'rb') as fo:
                 if sys.version_info[0] == 2:
@@ -115,11 +110,15 @@ class CIFAR10(object):
                 else:
                     entry = pickle.load(fo, encoding='latin1')
                 train_data.append(entry[0])
+                train_labels.append(entry[1])
                 #if 'labels' in entry:
+                """
                 if entry[1] in entry:
                     train_labels += entry[1]
                 else:
                     train_labels += entry[1]
+                """
+                  
         train_data = np.concatenate(train_data)
         train_data = train_data.reshape((len(train_data), 3, 32, 32))
         train_labels=np.array(train_labels)
