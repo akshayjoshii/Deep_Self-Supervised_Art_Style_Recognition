@@ -47,17 +47,16 @@ class CIFAR10(object):
         self.base_folder = 'Wikiart_Download'
         #self.url = "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz"
         self.url = "https://drive.google.com/drive/folders/1DFvUVgJcELu7X4xp60VPsgvUZIArvTl_/"
-        self.filename = "Train.pickle"
-        self.filename1 = "Test.pickle"
+        self.filename = "train.pickle"
+        self.filename1 = "test.pickle"
         #self.filename = "cifar-10-python.tar.gz"
         #self.tgz_md5 = 'c58f30108f718f92721af3b95e74349a'
         self.train_list = [
-            ['Train.pickle', 'c99cafc152244af753f735de768cd75f'],
-            ['Train.pickle', 'd4bba439e000b95fd0a9bffe97cbabec'],
+            ['train.pickle', 'c99cafc152244af753f735de768cd75f'],
             ]
 
         self.test_list = [  
-            ['Test.pickle', '40351d587109b95175f43aff81a1287e'],
+            ['test.pickle', '40351d587109b95175f43aff81a1287e'],
             ]
 
     def download(self):
@@ -109,15 +108,15 @@ class CIFAR10(object):
                     entry = pickle.load(fo)
                 else:
                     entry = pickle.load(fo, encoding='latin1')
-                train_data.append(entry[0])
-                train_labels.append(entry[1])
+                train_data.append(entry['data'])
+
                 #if 'labels' in entry:
-                """
-                if entry[1] in entry:
-                    train_labels += entry[1]
+                
+                if 'labels' in entry:
+                    train_labels += entry['labels']
                 else:
-                    train_labels += entry[1]
-                """
+                    train_labels += entry['fine_labels']
+                
                   
         train_data = np.concatenate(train_data)
         train_data = train_data.reshape((len(train_data), 3, 32, 32))

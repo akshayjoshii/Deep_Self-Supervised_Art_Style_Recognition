@@ -8,10 +8,18 @@ import random
 
 #Comment
 pickled_dataset = []
-pickle_in = open("/src/Dataset.pickle","rb")
-pickled_dataset = pickle.load(pickle_in)
+pickle_in = open("F:\wikiart\cifar-10-batches-py\data_batch_1","rb")
+pickled_dataset = pickle.load(pickle_in, encoding='latin1')
 #print ("Dumping complete")
-for sample in pickled_dataset[5:]:
-    plt.imshow(sample[0])
+features = pickled_dataset['data'].reshape((len(pickled_dataset['data']), 3, 32, 32))
+name = pickled_dataset['filenames']
+
+labels = pickled_dataset['labels']
+print(pickled_dataset)
+"""
+for label, filenames in pickled_dataset:
+    plt.imshow(filenames)
     plt.show()
-    print(sample[1])
+    #print(sample[1])
+
+"""
