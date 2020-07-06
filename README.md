@@ -1,10 +1,10 @@
 # Saarland HLCV Project
 Implementation of Auto Encoding Transformers for Art Style Recognition
 
-# CIFAR10 Usage:
+# Usage:
 python3 main.py --mode=0 -F=tmp_data/cifar --choose=0 --lr=0.002 --lr1=0.1 --batch_size=128 --num_workers=4 --type=0 --KL_Lambda=1.0 --lambda=10.0 --lambda1=7.5 --lambda2=5.0 --lambda3=2.0 --lambda4=0.5 --max_lambda=1 --max_lambda1=0.75 --max_lambda2=0.5 --max_lambda3=0.2 --max_lambda4=0.05 --portion=0.005 --beta=75 --mix_mode=1  --Mixmatch_warm=50 --dataset=cifar10
 
-#Colab Commands:
+# Colab Commands:
 !cp "/content/drive/My Drive/Dataset/train.pickle" "train.pickle"
 !cp "/content/drive/My Drive/Dataset/test.pickle" "test.pickle"
 
