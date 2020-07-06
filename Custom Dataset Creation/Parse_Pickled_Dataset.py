@@ -12,10 +12,13 @@ pickle_in = open("F:\wikiart\cifar-10-batches-py\data_batch_1","rb")
 pickled_dataset = pickle.load(pickle_in, encoding='latin1')
 #print ("Dumping complete")
 features = pickled_dataset['data'].reshape((len(pickled_dataset['data']), 3, 32, 32))
+print(len(pickled_dataset['data']))
+plt.imshow(features[0])
+#plt.show()
 name = pickled_dataset['filenames']
 
 labels = pickled_dataset['labels']
-print(pickled_dataset)
+#print(features[0])
 """
 for label, filenames in pickled_dataset:
     plt.imshow(filenames)

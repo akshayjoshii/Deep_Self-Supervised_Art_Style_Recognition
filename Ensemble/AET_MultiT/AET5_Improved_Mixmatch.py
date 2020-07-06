@@ -82,7 +82,7 @@ def Generate_Mixmatch5AET_Improved_Model(data,params):
 
     dataset_name = params['dataset']
     if dataset_name == 'cifar10':
-        num_classes = 4 #Previous value was 10
+        num_classes = 5 #Previous value was 10
     elif dataset_name == 'cifar100':
         num_classes = 100
     elif dataset_name=='SVHN':

@@ -6,10 +6,7 @@ from ops.os_operation import mkdir
 import os
 from torchvision.datasets.utils import download_url, check_integrity
 import sys
-if sys.version_info[0] == 2:
-    import cPickle as pickle
-else:
-    import pickle
+import pickle
 import numpy as np
 
 class CIFAR10(object):
@@ -38,9 +35,9 @@ class CIFAR10(object):
             mkdir(self.train_path)
             mkdir(self.test_path)
             if os.path.getsize(self.train_path)<1000000:
-                self.Process_Dataset(self.train_list,self.train_path)
+                self.Process_Dataset(self.train_list, self.train_path)
             if os.path.getsize(self.test_path)<1000000:
-                self.Process_Dataset(self.test_list,self.test_path)
+                self.Process_Dataset(self.test_list, self.test_path)
 
     def download_init(self):
         #self.base_folder = 'cifar-10-batches-py'
@@ -51,13 +48,9 @@ class CIFAR10(object):
         self.filename1 = "test.pickle"
         #self.filename = "cifar-10-python.tar.gz"
         #self.tgz_md5 = 'c58f30108f718f92721af3b95e74349a'
-        self.train_list = [
-            ['train.pickle', 'c99cafc152244af753f735de768cd75f'],
-            ]
+        self.train_list = ['train.pickle']
 
-        self.test_list = [  
-            ['test.pickle', '40351d587109b95175f43aff81a1287e'],
-            ]
+        self.test_list = ['test.pickle']
 
     def download(self):
         import tarfile
@@ -97,28 +90,35 @@ class CIFAR10(object):
     """
 
     def Process_Dataset(self,train_list,train_path):
-        train_data=[]
+        entry = []
+        train_data = []
         train_labels=[]
         for fentry in train_list:
             #Previously it was 'f = fentry[0]'
-            f = fentry[0]
+            f = fentry
             file = os.path.join(self.root, self.base_folder, f)
-            with open(file, 'rb') as fo:
-                if sys.version_info[0] == 2:
-                    entry = pickle.load(fo)
-                else:
-                    entry = pickle.load(fo, encoding='latin1')
+            with open(file, "rb") as fo:
+                entry = pickle.load(fo, encoding='latin1')
+                #print(entry)
                 train_data.append(entry['data'])
+                print(len(train_data))
+                #print('Data: {}{}'.format(train_list, train_data[0]))
+                train_labels += entry['labels']
+                #print(train_labels[0])
+                #print("break")
+                #print(train_labels)
 
                 #if 'labels' in entry:
-                
+                """
                 if 'labels' in entry:
                     train_labels += entry['labels']
                 else:
                     train_labels += entry['fine_labels']
+                """
                 
                   
         train_data = np.concatenate(train_data)
+        #train_data = np.array(train_data)
         train_data = train_data.reshape((len(train_data), 3, 32, 32))
         train_labels=np.array(train_labels)
         #following Channel,height,width format
