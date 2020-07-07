@@ -6,6 +6,8 @@ from torchvision import models
 import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 from collections import Counter
+from sklearn import metrics
+import operator
 
 def update_lr(optimizer, lr):
     for param_group in optimizer.param_groups:
@@ -16,7 +18,7 @@ def update_lr(optimizer, lr):
 layer_config= [512, 256]
 num_classes = 27
 num_epochs = 20
-batch_size = 100
+batch_size = 300
 learning_rate = 1e-3
 learning_rate_decay = 0.9
 fine_tune = True
@@ -36,7 +38,7 @@ data_aug_transforms = transforms.Compose([transforms.RandomCrop(500, pad_if_need
 
 def load_dataset():
     data_path = '/src/wikiart'
-    #data_path = '/content/wikitest'
+    #data_path = '/content/wikitrain'
     dataset = torchvision.datasets.ImageFolder(
         root=data_path,
         transform=data_aug_transforms
@@ -72,7 +74,7 @@ def load_dataset():
         num_workers=0,
         shuffle=True
     )
-    return train_loader, val_loader, test_loader, test_dataset
+    return train_loader, val_loader, test_loader, test_dataset , dataset
 
 """
 def load_testset():
@@ -86,7 +88,7 @@ def load_testset():
     return test_dataset,test_loader
 """
 
-train_loader, val_loader, test_loader, test_dataset = load_dataset()
+train_loader, val_loader, test_loader, test_dataset, dataset = load_dataset()
 #test_dataset,test_loader = load_testset()
 
 def set_parameter_requires_grad(model, feature_extracting):
@@ -98,7 +100,7 @@ class ResNetModel(nn.Module):
     def __init__(self, n_class, fine_tune, pretrained=True):
         super(ResNetModel, self).__init__()
         
-        resnet = models.resnet101(pretrained)
+        resnet = models.resnet50(pretrained)
 
         set_parameter_requires_grad(resnet, fine_tune)
         num_ftrs = resnet.fc.in_features
@@ -148,7 +150,7 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
-        if (i+1) % 50 == 0:
+        if (i+1) % 150 == 0:
             print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
                    .format(epoch+1, num_epochs, i+1, total_step, loss.item()))
             logging.debug('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}\n'
@@ -174,7 +176,19 @@ for epoch in range(num_epochs):
             #Val = 100 * (correct / total)
         print('Validataion accuracy for {} images is: {} %'.format(total, 100 * (correct / total)))
         logging.debug('Validataion accuracy for {} images is: {} %\n'.format(total, 100 * (correct / total)))
-        
+
+        #Save best model
+        cur_accuracy = 100 * correct / total
+        if cur_accuracy>best_accuracy:
+            best_accuracy = cur_accuracy
+            best_model = model
+            print("best")
+            torch.save(best_model.state_dict(),'./best_model.ckpt')
+
+    model.train()
+      
+model.eval()
+model.load_state_dict(torch.load('./best_model.ckpt'))
 model.eval()
 with torch.no_grad():
     correct = 0
@@ -183,6 +197,7 @@ with torch.no_grad():
     for images, labels in test_loader:
         images = images.to(device)
         labels = labels.to(device)
+        label_all.append(labels)
         outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
         predicted_all.append(predicted)
@@ -190,5 +205,17 @@ with torch.no_grad():
         correct += (predicted == labels).sum().item()
         if total == 1000:
           break
+
+   
+    # per class metrics
+    output_true = label_all[0].tolist()
+    output_pred = predicted_all[0].tolist()
+    sorted_class = sorted(dataset.class_to_idx.items(), key=operator.itemgetter(1))
+    target_names=[]
+    for classname in sorted_class:
+        target_names.append(classname[0])
+    print(metrics.classification_report(output_true, output_pred,target_names=target_names, digits=num_classes))
+
+    # overall classification metric
     print('Accuracy of the final network on {} test images: {} %'.format(total, 100 * (correct / total)))
     logging.debug('Accuracy of the final network on {} test images: {} %\n'.format(total, 100 * (correct / total)))
