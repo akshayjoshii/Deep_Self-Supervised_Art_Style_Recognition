@@ -15,12 +15,12 @@ def update_lr(optimizer, lr):
 
 
 #input_size = 32 * 32 * 3
-layer_config= [512, 256]
+#layer_config= [512, 256]
 num_classes = 27
 num_epochs = 20
-batch_size = 300
+batch_size = 50 #Don't use more than 50 if model is running on 1 GPU only!
 learning_rate = 1e-3
-learning_rate_decay = 0.9
+learning_rate_decay = 0.8
 fine_tune = True
 pretrained=True
 # num_training= 35 #45000
@@ -34,7 +34,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print('Using device: %s'%device)
 
 
-data_aug_transforms = transforms.Compose([transforms.RandomCrop(500, pad_if_needed=True), transforms.ToTensor()])
+data_aug_transforms = transforms.Compose([transforms.RandomCrop(600, pad_if_needed=True), transforms.ToTensor()])
 
 def load_dataset():
     data_path = '/src/wikiart'
@@ -99,9 +99,7 @@ def set_parameter_requires_grad(model, feature_extracting):
 class ResNetModel(nn.Module):
     def __init__(self, n_class, fine_tune, pretrained=True):
         super(ResNetModel, self).__init__()
-        
         resnet = models.resnet50(pretrained)
-
         set_parameter_requires_grad(resnet, fine_tune)
         num_ftrs = resnet.fc.in_features
         resnet.fc = nn.Linear(num_ftrs, num_classes)
@@ -109,9 +107,7 @@ class ResNetModel(nn.Module):
     
 
     def forward(self, x):
-       
         out = self.model(x)
-      
         return out
 
 # Initialize the model for this run
@@ -128,7 +124,7 @@ ResN_Val_Acc = []
 ResN_Losses = []
 lr = learning_rate
 total_step = len(train_loader)
-logging.basicConfig(filename='/src/Model_Training.log', level=logging.DEBUG)
+logging.basicConfig(filename='/src/Model_Training.log', level=logging.INFO)
 for epoch in range(num_epochs):
   #for i, (images, labels) in enumerate(train_loader):
     for i, (images, labels) in enumerate(train_loader):
@@ -153,7 +149,7 @@ for epoch in range(num_epochs):
         if (i+1) % 150 == 0:
             print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
                    .format(epoch+1, num_epochs, i+1, total_step, loss.item()))
-            logging.debug('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}\n'
+            logging.info('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
                    .format(epoch+1, num_epochs, i+1, total_step, loss.item()))
     
     lr *= learning_rate_decay
@@ -175,7 +171,7 @@ for epoch in range(num_epochs):
             correct += (predicted == labels).sum().item()
             #Val = 100 * (correct / total)
         print('Validataion accuracy for {} images is: {} %'.format(total, 100 * (correct / total)))
-        logging.debug('Validataion accuracy for {} images is: {} %\n'.format(total, 100 * (correct / total)))
+        logging.info('Validataion accuracy for {} images is: {} %'.format(total, 100 * (correct / total)))
 
         #Save best model
         cur_accuracy = 100 * correct / total
@@ -203,8 +199,8 @@ with torch.no_grad():
         predicted_all.append(predicted)
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
-        if total == 1000:
-          break
+        #if total == 1000:
+          #break
 
    
     # per class metrics
@@ -218,4 +214,4 @@ with torch.no_grad():
 
     # overall classification metric
     print('Accuracy of the final network on {} test images: {} %'.format(total, 100 * (correct / total)))
-    logging.debug('Accuracy of the final network on {} test images: {} %\n'.format(total, 100 * (correct / total)))
+    logging.info('Accuracy of the final network on {} test images: {} %'.format(total, 100 * (correct / total)))
