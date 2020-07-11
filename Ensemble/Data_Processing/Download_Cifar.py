@@ -119,7 +119,7 @@ class CIFAR10(object):
                   
         train_data = np.concatenate(train_data)
         #train_data = np.array(train_data)
-        train_data = train_data.reshape((len(train_data), 3, 32, 32))
+        train_data = train_data.reshape((len(train_data), 3, 384, 384)) #need to change the dimensions later
         train_labels=np.array(train_labels)
         #following Channel,height,width format
         #self.train_data = self.train_data.transpose((0, 2, 3, 1))  # convert to HWC

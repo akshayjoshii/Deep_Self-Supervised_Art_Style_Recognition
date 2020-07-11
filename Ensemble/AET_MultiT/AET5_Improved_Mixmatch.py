@@ -467,8 +467,12 @@ with data augmentation
 
 def prepare_Dataloader(data,params,num_classes):
     if params['dataset']=='cifar10':
-        TRAIN_MEAN = (0.4914, 0.4822, 0.4465)  # equals np.mean(train_set.train_data, axis=(0,1,2))/255
-        TRAIN_STD= (0.2471, 0.2435, 0.2616)  # equals np.std(train_set.train_data, axis=(0,1,2))/255
+        TRAIN_MEAN = ()
+        TRAIN_STD = ()
+        TRAIN_MEAN = np.mean(trainset.train_data, axis=(0,1,2))/255 #On the fly 
+        TRAIN_STD = np.std(trainset.train_data, axis=(0,1,2))/255
+        #TRAIN_MEAN = (0.4914, 0.4822, 0.4465)  # equals np.mean(train_set.train_data, axis=(0,1,2))/255
+        #TRAIN_STD= (0.2471, 0.2435, 0.2616)  # equals np.std(train_set.train_data, axis=(0,1,2))/255
     elif params['dataset']=='cifar100':
         TRAIN_MEAN = (0.5070751592371323, 0.48654887331495095, 0.4409178433670343)
         TRAIN_STD = (0.2673342858792401, 0.2564384629170883, 0.27615047132568404)
@@ -478,9 +482,11 @@ def prepare_Dataloader(data,params,num_classes):
     #dataset=torchvision.dataset.cifar10(params['F'], train=True, download=True)
     from ops.Transform_ops import RandomFlip,RandomPadandCrop
     transform_train = transforms.Compose([
-        RandomPadandCrop(32),
+        RandomPadandCrop(384),
         RandomFlip(),
         # dataset.ToTensor(),
+        #Need to change the RandomCrop param value
+        #The RandomPadandCrop had (32) before
     ])
 
     unlabel_dataset = AET_All_Dataloader(dataset_dir=data.train_path, dataset_mean=TRAIN_MEAN,dataset_std=TRAIN_STD,shift=params['shift'],degrees=params['rot'],shear=params['shear'],
