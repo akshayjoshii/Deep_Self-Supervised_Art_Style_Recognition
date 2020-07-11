@@ -123,6 +123,8 @@ class CIFAR10(object):
         train_labels=np.array(train_labels)
         #following Channel,height,width format
         #self.train_data = self.train_data.transpose((0, 2, 3, 1))  # convert to HWC
+        tmp_train_path=os.path.join(train_path,'trainset', '.npy')
+        np.save(tmp_train_path,train_data)
         for i in range(len(train_data)):
             tmp_train_path=os.path.join(train_path,'trainset'+str(i)+'.npy')
             tmp_aim_path = os.path.join(train_path, 'aimset' + str(i) + '.npy')
