@@ -469,7 +469,8 @@ def prepare_Dataloader(data,params,num_classes):
     if params['dataset']=='cifar10':
         TRAIN_MEAN = ()
         TRAIN_STD = ()
-        TRAIN_MEAN = np.mean(trainset.train_data, axis=(0,1,2))/255 #On the fly 
+        paths = ''
+        TRAIN_MEAN = np.mean(tmp_data.cifar.Wikiart_Load.trainset.train_data, axis=(0,1,2))/255 #On the fly 
         TRAIN_STD = np.std(trainset.train_data, axis=(0,1,2))/255
         #TRAIN_MEAN = (0.4914, 0.4822, 0.4465)  # equals np.mean(train_set.train_data, axis=(0,1,2))/255
         #TRAIN_STD= (0.2471, 0.2435, 0.2616)  # equals np.std(train_set.train_data, axis=(0,1,2))/255
