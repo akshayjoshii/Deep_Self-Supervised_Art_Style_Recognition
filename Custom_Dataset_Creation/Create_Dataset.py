@@ -22,6 +22,7 @@ Categories = ["Abstract_Expressionism", "Action_painting", "Analytical_Cubism", 
 #                 "Fauvism", "High_Renaissance", "Impressionism", "Mannerism_Late_Renaissance", "Minimalism"]
 
 # Categories = ['Abstract_Expressionism', 'Action_painting', 'Cubism', 'Minimalism', 'Expressionism', 'Analytical_Cubism']
+# Categories = ['Action_painting']
 """
 ##Code to visualize each image in the wikiart dataset folder##
 
@@ -41,6 +42,8 @@ train_data = []
 test_data = []
 dict_train = {'labels': [], 'data': []}
 dict_test = {'labels': [], 'data': []}
+arr = []
+
 
 def create_dataset():
     total_count = 0
@@ -88,11 +91,17 @@ def create_dataset():
                     # dim = (height, width)
                     # print(dim)
                     # resize image
+                    # plt.imshow(img_array)
+                    # plt.show()
                     new_array = cv2.resize(img_array, (384, 384))
+                    # plt.imshow(new_array)
+                    # plt.show()
+                    # break
                     # print(len(new_array))
                     # print(len(new_array.flatten()))
                     # print(new_array.flatten())
                     # break
+                    arr.append(new_array)
                     dict_train['labels'].append(class_num)
                     dict_train['data'].append(new_array.flatten())
                 except Exception as e:
@@ -107,6 +116,7 @@ def create_dataset():
                     # dim = (height, width)
                     # resize image
                     new_array = cv2.resize(img_array, (384, 384))
+                    arr.append(new_array)
                     dict_test['labels'].append(class_num)
                     dict_test['data'].append(new_array.flatten())
                 except Exception as e:
@@ -117,11 +127,11 @@ def create_dataset():
         print('no. of images processed currently: ', total_count)
     print('Total training images taken:', total_train)
     print('Total test images taken:', total_test)
-    return dict_train, dict_test
+    return dict_train, dict_test, total_count
 
 #Driver Code
 # final_train, final_test = [], []
-final_train, final_test = create_dataset()
+final_train, final_test, total_count = create_dataset()
 
 # Shuffling the data
 for i in range(0, 2):
@@ -141,18 +151,33 @@ for i in range(0, 2):
 # print(len(dict_train['labels']))
 print('length of final train dict data value', len(dict_train['data'][0]))
 print('length of final test dict data value', len(dict_test['data'][0]))
-print('pickle is generated inside ')
+print('pickle is generated inside src folder')
 # print(dict_train['data'])
 # print(dict_train['labels'])
 
+mean_array = dict_train['data']
+ll = len(mean_array)
+print('Calculating Mean and std now for total images:', total_count)
+mean_array = np.array(arr)
+print(mean_array.shape)
+# mean_array = mean_array.reshape(ll, 3, 224, 224)
+# print(mean_array.shape)
+# TRAIN_MEAN = mean_array.mean(axis=tuple(range(1, mean_array.ndim)))
+# np.mean(mean_array, axis=(0,1,2))/255 #On the fly
+TRAIN_MEAN = np.mean(mean_array, axis=(0,1,2))/255 #On the fly
+TRAIN_STD = np.std(mean_array, axis=(0,1,2))/255
+print('mean:', TRAIN_MEAN)
+print('standard deviation:', TRAIN_STD)
+
+
 #Dump a pickle dataset file
-# pickle_out = open("..\wikiart\\train_1000.pickle","wb")
-pickle_out = open("/src/wikiart\\train_1000.pickle", "wb")
+pickle_out = open("dataset_pickle/train_384.pickle","wb")
+# pickle_out = open("train.pickle", "wb")
 pickle.dump(dict_train, pickle_out)
 pickle_out.close()
 
-# pickle_out = open("..\wikiart\\test_1000.pickle","wb")
-pickle_out = open("/src/wikiart\\test_1000.pickle", "wb")
+pickle_out = open("dataset_pickle/test_384.pickle","wb")
+# pickle_out = open("test.pickle", "wb")
 pickle.dump(dict_test, pickle_out)
 pickle_out.close()
 
