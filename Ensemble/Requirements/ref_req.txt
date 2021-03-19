@@ -1,6 +1,6 @@
 matplotlib
 numpy
-Pillow==5.1.0
+Pillow==8.1.1
 scipy
 tensorboard
 tensorboardX
